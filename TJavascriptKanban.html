@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Quadro Kanban, da maria fernanda 26397 e thiago 26411</title>
+    <style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background-color: #f0d6f5;
+    background-image: url('baixados (1).jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+header {
+    background-color: rgba(138, 44, 133, 0.589);
+    backdrop-filter: blur(6px);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+header h1 {
+    color: white;
+    margin: 0;
+    margin-right: 20px;
+    font-size: 20px;
+}
+
+header input {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    width: 250px;
+    background-color: rgba(255, 255, 255, 0.87);
+}
+
+header select {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+header button {
+    padding: 8px 16px;
+    background-color: rgba(119, 74, 192, 0.692);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+header button:hover {
+    background-color: rgba(78, 30, 132, 0.9);
+}
+
+.quadro {
+    display: flex;
+    gap: 20px;
+    padding: 24px;
+}
+
+.coluna {
+    flex: 1;
+
+    
+    background-color: rgba(196, 171, 214, 0.479);
+    backdrop-filter: blur(px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    padding: 16px;
+    min-height: 600px;
+}
+
+.coluna h2 {
+    text-align: center;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+    color: white;
+    margin-top: 0;
+}
+
+#col-a-fazer h2   { background-color: rgba(100, 80, 160, 0.616); }
+#col-fazendo h2   { background-color: rgba(158, 50, 180, 0.527); }
+#col-concluido h2 { background-color: rgba(36, 59, 163, 0.61);  }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Kanban</h1>
+
+        <input type="text" id="inputTitulo" placeholder="Nome da tarefa...">
+
+        <select id="inputPrioridade">
+            <option value="Alta">Alta</option>
+            <option value="Média">Média</option>
+            <option value="Baixa">Baixa</option>
+        </select>
+
+        <button onclick="adicionarTarefa()">Adicionar</button>
+    </header>
+
+    <div class="quadro">
+        <div class="coluna" id="col-a-fazer">
+            <h2>A Fazer</h2>
+
+        </div>
+
+        <div class="coluna" id="col-fazendo">
+            <h2>Em Progresso</h2>
+    
+        </div>
+
+        <div class="coluna" id="col-concluido">
+            <h2>Feito</h2>
+
+        </div>
+    </div>
+
+    <script>
+
+let tarefas = [];
+let proximoId = 1;
+
+function adicionarTarefa() {
+    let titulo = document.getElementById("inputTitulo").value;
+
+
+    if (titulo.trim() === "") {
+        alert("Digite um nome para a tarefa.");
+        return;
+    }
+
+    let prioridade = document.getElementById("inputPrioridade").value;
+
+
+    let novaTarefa = {
+        id: proximoId,
+        titulo: titulo,
+        prioridade: prioridade,
+        status: "a-fazer"
+    };
+
+    tarefas.push(novaTarefa); 
+    proximoId++;
+
+
+    document.getElementById("inputTitulo").value = "";
+
+    renderizarTarefas();
+}
+
+
+function renderizarTarefas() {
+
+
+    let colAFazer   = document.getElementById("col-a-fazer");
+    let colFazendo  = document.getElementById("col-fazendo");
+    let colConcluido = document.getElementById("col-concluido");
+
+
+    colAFazer.innerHTML    = "<h2>A Fazer</h2>";
+    colFazendo.innerHTML   = "<h2>Em Progresso</h2>";
+    colConcluido.innerHTML = "<h2>Feito</h2>";
+
+ 
+    for (let i = 0; i < tarefas.length; i++) {
+        let t = tarefas[i];
+
+        
+        let corBorda;
+        if (t.prioridade === "Alta") {
+            corBorda = "PaleVioletRed";
+        } else if (t.prioridade === "Média") {
+            corBorda = "PeachPuff";
+        } else {
+            corBorda = "PowderBlue";
+        }
+
+        
+        let estiloTexto = t.status === "concluido" ? "text-decoration: line-through;" : "";
+
+        
+        let cardHTML = `
+    <div style="
+        background: linear-gradient(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.55)),
+                    url('fundolistrado.jpg');
+        background-size: cover;
+        backdrop-filter: blur(2px);
+        border-left: 5px solid ${corBorda};
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 10px;
+    ">
+        <p style="margin: 0 0 8px 0; font-weight: bold; ${estiloTexto}">
+            ${t.titulo}
+        </p>
+        <small>Prioridade: ${t.prioridade}</small>
+        <br><br>
+        <button onclick="avancarStatus(${t.id})"
+                style="color:Thistle;">▶ Avançar</button>
+        <button onclick="excluirTarefa(${t.id})"
+                style="margin-left: 6px; color: IndianRed;">✕ Excluir</button>
+    </div>
+`;
+
+        
+        if (t.status === "a-fazer") {
+            colAFazer.innerHTML += cardHTML;
+        } else if (t.status === "fazendo") {
+            colFazendo.innerHTML += cardHTML;
+        } else {
+            colConcluido.innerHTML += cardHTML;
+        }
+    }
+}
+
+
+function avancarStatus(id) {
+    
+    let indice = tarefas.findIndex(t => t.id === id);
+
+    if (tarefas[indice].status === "a-fazer") {
+        tarefas[indice].status = "fazendo";
+    } else if (tarefas[indice].status === "fazendo") {
+        tarefas[indice].status = "concluido";
+    }
+    
+
+    renderizarTarefas();
+}
+
+
+function excluirTarefa(id) {
+    tarefas = tarefas.filter(t => t.id !== id);
+    renderizarTarefas();
+}
+
+
+
+    </script>
+
+</body>
+</html>
